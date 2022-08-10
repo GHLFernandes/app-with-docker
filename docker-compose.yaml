@@ -1,0 +1,21 @@
+version: '3'                                          # version of the API to use
+
+
+services:
+  app:                                                # app service
+    build: .                                          # path to the build directory
+    command: wait-for db:3306 -t 40 -- ./start.sh     # command to run when service is started
+    ports:                                            # ports to expose to the host
+      - 8000:8080                                     # expose port 8000 of the container to port 8080 of the host
+    volumes:                                          # volumes to mount to the container
+      - .:/home/node/app                              # mount the current directory to /home/node/app
+    depends_on:
+      - db                                            # depend on the db service
+
+  db:
+    image: mysql:5.7                                  # image to use
+    environment:                                      # environment variables to set in the container
+      - MYSQL_DATABASE=mydb                           # set the MYSQL_DATABASE environment variable to mydb 
+      - MYSQL_ROOT_PASSWORD=root                      # set the MYSQL_ROOT_PASSWORD environment variable to root
+    volumes:                                          # volumes to mount to the container
+      - ./dbdata:/var/lib/mysql                       # mount the current directory to /var/lib/mysql
